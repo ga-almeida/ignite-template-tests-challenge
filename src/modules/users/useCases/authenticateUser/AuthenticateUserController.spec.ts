@@ -1,7 +1,10 @@
 import request from "supertest";
+import { Connection } from "typeorm";
 import { app } from "../../../../app";
 
-import connection from '../../../../database';
+import createConnection from '../../../../database';
+
+let connection: Connection;
 
 let user_test: {
   name: string;
@@ -11,7 +14,8 @@ let user_test: {
 
 describe("Authenticate User", () => {
   beforeAll(async ()=>{
-    await connection.create();
+    connection = await createConnection();
+    await connection.runMigrations();
 
     user_test = {
       email: "jhondoe@test.com.br",
@@ -23,11 +27,8 @@ describe("Authenticate User", () => {
   });
 
   afterAll(async ()=>{
+    await connection.dropDatabase();
     await connection.close();
-  });
-
-  beforeEach(async () => {
-    await connection.clear();
   });
 
   it("should be able to authenticate user", async () => {

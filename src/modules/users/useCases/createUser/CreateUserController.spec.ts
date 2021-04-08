@@ -1,19 +1,20 @@
 import request from "supertest";
+import { Connection } from "typeorm";
 import { app } from "../../../../app";
 
-import connection from '../../../../database';
+import createConnection from '../../../../database';
+
+let connection: Connection;
 
 describe("Create User", () => {
   beforeAll(async ()=>{
-    await connection.create();
+    connection = await createConnection();
+    await connection.runMigrations();
   });
 
   afterAll(async ()=>{
+    await connection.dropDatabase();
     await connection.close();
-  });
-
-  beforeEach(async () => {
-    await connection.clear();
   });
 
   it("should be able to create a new user", async () => {

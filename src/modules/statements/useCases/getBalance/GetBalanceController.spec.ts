@@ -7,12 +7,12 @@ import createConnection from '../../../../database';
 let connection: Connection;
 
 let user_test: {
-  name: string;
   email: string;
+  name: string;
   password: string;
 };
 
-describe("Show User Profile", () => {
+describe("Get Balance", () => {
   beforeAll(async ()=>{
     connection = await createConnection();
     await connection.runMigrations();
@@ -31,35 +31,37 @@ describe("Show User Profile", () => {
     await connection.close();
   });
 
-  it("should be able to show profile of user", async () => {
-    const responseToken = await request(app)
-      .post("/api/v1/sessions").send({
-        email: user_test.email,
-        password: user_test.password,
-      });
+  it("should be able to get balance", async () => {
+    const responseToken = await request(app).post("/api/v1/sessions").send({
+      email: "jhondoe@test.com.br",
+      password: "1234",
+    });
 
     const { token } = responseToken.body;
 
     const response = await request(app)
-      .get("/api/v1/profile")
-      .set({ Authorization: `Bearer ${token}` });
+    .get("/api/v1/statements/balance")
+    .set({
+      Authorization: `Bearer ${token}`
+    })
 
     expect(response.status).toBe(200);
   });
 
-  it("should not be able show user profile id invalid", async () => {
-    const responseToken = await request(app)
-      .post("/api/v1/sessions").send({
-        email: "email_invalid",
-        password: user_test.password,
-      });
+  it("should not be able to get balance non-existing user", async () => {
+    const responseToken = await request(app).post("/api/v1/sessions").send({
+      email: "user_invalid",
+      password: "1234",
+    });
 
     const { token } = responseToken.body;
 
     const response = await request(app)
-      .get("/api/v1/profile")
-      .set({ Authorization: `Bearer ${token}` });
+    .get("/api/v1/statements/balance")
+    .set({
+      Authorization: `Bearer ${token}`
+    })
 
-      expect(response.status).toBe(401);
+    expect(response.status).toBe(401);
   });
 });
