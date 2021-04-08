@@ -1,12 +1,14 @@
 {
-  "username": "postgres",
-  "password": "docker",
+  "username": "docker",
+  "password": "ignite",
 
   "name": "default",
   "type": "postgres",
   "host": "localhost",
   "port": 5432,
   "database": "fin_api",
+  "dropSchema": true,
+  "migrationsRun": true,
   "entities": [
     "./src/modules/**/entities/*.ts"
   ],
